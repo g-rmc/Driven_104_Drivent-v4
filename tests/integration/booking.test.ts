@@ -82,3 +82,84 @@ describe("GET /booking", () => {
     });
   });
 });
+
+describe("POST /booking", () => {
+  it("should respond with status 401 if no token is given", async () => {
+    const response = await server.post("/booking");
+  
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+  
+  it("should respond with status 401 if given token is not valid", async () => {
+    const token = faker.lorem.word();
+  
+    const response = await server.post("/booking").set("Authorization", `Bearer ${token}`);
+  
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+  
+  it("should respond with status 401 if there is no session for given token", async () => {
+    const userWithoutSession = await createUser();
+    const token = jwt.sign({ userId: userWithoutSession.id }, process.env.JWT_SECRET);
+  
+    const response = await server.post("/booking").set("Authorization", `Bearer ${token}`);
+  
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+  
+  describe("when token is valid", () => {
+    it("should respond with status 403 if user doesnt have a enrollment", async () => {
+      const token = await generateValidToken();
+    
+      const response = await server.post("/booking").set("Authorization", `Bearer ${token}`);
+    
+      expect(response.status).toBe(httpStatus.FORBIDDEN);
+    });
+
+    it("should respond with status 403 if user doesnt have a ticket", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      await createEnrollmentWithAddress(user);
+  
+      const response = await server.post("/booking").set("Authorization", `Bearer ${token}`);
+    
+      expect(response.status).toBe(httpStatus.FORBIDDEN);
+    });
+
+    it("should respond with status 403 if user ticket is remote", async () => {
+      expect(500).toBe(httpStatus.FORBIDDEN);
+    });
+
+    it("should respond with status 403 if user doesnt includes hotel", async () => {
+      expect(500).toBe(httpStatus.FORBIDDEN);
+    });
+
+    it("should respond with status 403 if user ticket isnt paid", async () => {
+      expect(500).toBe(httpStatus.FORBIDDEN);
+    });
+
+    describe("when ticket is valid", () => {
+      it("should respond with status 403 if roomId is missing", async () => {
+        expect(500).toBe(httpStatus.FORBIDDEN);
+      });
+
+      it("should respond with status 403 for invalid roomId", async () => {
+        expect(500).toBe(httpStatus.FORBIDDEN);
+      });
+
+      it("should respond with status 404 if room doesnt exist", async () => {
+        expect(500).toBe(httpStatus.FORBIDDEN);
+      });
+
+      it("should respond with status 403 if room capacity is full", async () => {
+        expect(500).toBe(httpStatus.FORBIDDEN);
+      });
+      
+      it("should respond with status 200 and bookingId", async () => {
+        expect(500).toBe(httpStatus.FORBIDDEN);
+      });
+    });
+  });
+});
+
+//Testes na rota PUT: verificar se o bookingId é do usuário e não precisa verificar a validade do ticket
