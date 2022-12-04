@@ -128,6 +128,7 @@ describe("POST /booking", () => {
 
     it("should respond with status 403 if user ticket is remote", async () => {
       expect(500).toBe(httpStatus.FORBIDDEN);
+      //test
     });
 
     it("should respond with status 403 if user doesnt includes hotel", async () => {
