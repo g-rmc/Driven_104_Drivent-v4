@@ -18,14 +18,19 @@ export async function getUserBooking(req: AuthenticatedRequest, res: Response) {
 
 export async function postUserBooking(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
-  
+  const roomId = Number(req.body.roomId);
+
   try {
-    return res.status(httpStatus.OK).send(0);
+    const newBooking = await bookingService.createUserBookingWithRoomId(Number(userId), roomId);
+    return res.status(httpStatus.OK).send({ bookingId: newBooking.id });
   } catch (error) {
     if (error.name === "NotFoundError") {
       return res.sendStatus(httpStatus.NOT_FOUND);
     }
-    return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
+    if (error.name === "UnauthorizedError") {
+      return res.sendStatus(httpStatus.FORBIDDEN);
+    }
+    return res.sendStatus(300);
   }
 }
 
