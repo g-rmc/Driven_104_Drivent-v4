@@ -130,7 +130,7 @@ describe("POST /booking", () => {
       expect(500).toBe(httpStatus.FORBIDDEN);
     });
 
-    it("should respond with status 403 if user doesnt includes hotel", async () => {
+    it("should respond with status 403 if user ticket doesnt includes hotel", async () => {
       expect(500).toBe(httpStatus.FORBIDDEN);
     });
 
@@ -158,11 +158,15 @@ describe("POST /booking", () => {
       it("should respond with status 200 and bookingId", async () => {
         expect(500).toBe(httpStatus.FORBIDDEN);
       });
+
+      it("should create a booking in database", async () => {
+        expect(500).toBe(httpStatus.FORBIDDEN);
+      });
     });
   });
 });
 
-describe("PUT /booking", () => {
+describe("PUT /booking/:bookingId", () => {
   it("should respond with status 401 if no token is given", async () => {
     const response = await server.put("/booking");
   
@@ -187,7 +191,7 @@ describe("PUT /booking", () => {
   });
   
   describe("when token is valid", () => {
-    it("should respond with status 403 if user doesnt have a booking", async () => {
+    it("should respond with status 403 if user doesnt own bookingId", async () => {
       expect(500).toBe(httpStatus.FORBIDDEN);
     });
 
